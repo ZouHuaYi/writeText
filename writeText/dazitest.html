@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <!--<link rel="stylesheet" href="../css/textstyle.css" type="text/css"/>-->
+    <style type="text/css">
+        #box{
+            width: 300px;
+            height: 200px;
+            margin: 0 auto;
+            background: #cccccc;
+            padding: 20px;
+            border: 1px solid #000000;
+            position: relative;
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery1.9.1.min.js"></script>
+    <!--<script type="text/javascript" src="js/textmove.js"></script>-->
+</head>
+<body>
+<div id="box">
+
+</div>
+</body>
+<script type="text/javascript">
+
+   (function($){
+       var olink=$('<link rel="stylesheet" href="css/textstyle.css" type="text/css"/>');
+        $("head").append(olink);
+        var opt={
+            content:{
+                "a":"作者：zhy;" ,
+                "b":"今年25岁;",
+                "c":"未婚",
+                "d":"本科毕业于广东海洋大学。"
+            },
+            height:30,      //设置文本定位高度的大小
+            distance:20,
+            lineNum:0,
+            haveLine:false,
+            line:"_",
+            moveTime:100,
+            callback:function(){}
+        };
+        var setting={},
+            $parent=null;
+            arrWidth=[],
+            numLength=0,
+            gowidth=0,
+            onoff=true,
+            goheight=0;
+        function writeText(obj){ //这是主要的函数部分，
+            $.extend(setting,opt,obj);
+            $parent=this;
+            onoff=true;
+            if(!setting.haveLine){
+                setHtml();   //动态生成主要结构的函数
+            }
+            setting.haveLine=false;
+            setText();   //生成显示字体的函数
+            lineBor();   //光标显示的函数
+            gowidth=setting.distance;
+            goheight=setting.height;
+            lineRun(gowidth,setting.lineNum);  //移动生成字体的函数
+            return this;
+        };
+        function setHtml(){
+            var str='<div class="wrapText">'+
+                    ' <div class="spanText"></div>'+
+                    '<div class="textLine">'+setting.line+'</div>'+
+                    '</div>';
+            $parent.html(str);
+        };
+        function setText(){
+            for(var attr in setting.content){
+                var ospan=$("<span>");
+                ospan.html(setting.content[attr]);
+                $(".spanText").append(ospan);
+            };
+            numLength=$(".spanText span").size();
+            console.log(numLength)
+            for(var i=setting.lineNum;i<numLength;i++){
+                arrWidth[i]=$(".spanText span").eq(i).width();
+                $(".spanText span").eq(i).css({"top":i*setting.height+"px","width":"0px","height":setting.height+"px","lineHeight":setting.height+"px"})
+            }
+            console.log(arrWidth)
+        };
+        function lineBor(){
+        $(".textLine").show(100,function(){
+           $(this).hide(100,function(){
+               if(onoff){
+                   console.log(onoff)
+                   lineBor();
+               }
+           })
+       })
+   };
+        function lineRun(iW,iA){
+            console.log(iW,iA)
+            $(".textLine").stop(false,true).animate({"left":(iW+=gowidth)+"px"},setting.moveTime,function(){
+                $(".spanText span").eq(iA).css({"width":iW+"px"});
+                if(iW>=arrWidth[iA]){
+                    iA++;
+                    iW=0;
+                }
+                if(iA<numLength){
+                    $(".textLine").css({"top":iA*goheight+"px"});
+                    lineRun(iW,iA);
+                }else{
+                    onoff=false;
+                    setting.lineNum=numLength-1;
+                    setting.callback&&setting.callback();
+                }
+
+            })
+        };
+        $.fn.extend({
+            writeText:writeText
+        })
+    })(jQuery);
+
+
+    $("#box").writeText({
+        content:{
+            "a":"作者：zhy;" ,
+            "b":"今年25岁;",
+            "c":"未婚",
+            "d":"本科hgjkjlghjkghjkghjk"
+        },
+        callback:f()
+    });
+
+
+   $("#box").click(function(){
+       f();
+   })
+
+
+   function f(){
+       $("#box").writeText({
+           content:{
+               "1":"hadaddgdgdgdgada",
+               "2":"sfsffhfhfhfhfhfsfs",
+               "3":"fsfgdhddhfhfhfsfsfs"
+           }
+       })
+   }
+   function d(){
+       $("#box").writeText({
+           content:{
+               "a":"hadadada",
+               "b":"sfsfsdgdgdgdgdgdgfs",
+               "c":"fsfsfsfs"
+           },
+           lineNum:7,
+           haveLine:true
+       })
+   }
+
+</script>
+</html>

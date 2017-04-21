@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/textstyle.css"/>
+    <style>
+        .box1{
+            width: 300px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="wrapText">
+        <div class="spanText">
+            <span>function treeCanvas(){</span>
+            <span>&nbsp;var obj={idCanvas:$("#myTree")[0],radius:20};</span>
+            <span>&nbsp;var otree=gdgdgdgdczczczczczcnew Branch(obj);</span>
+            <span>&nbsp;otree.mainTree();}</span>
+            <span>&nbsp;otree.mainTree();}</span>
+            <span>&nbsp;otree.mainTree();}</span>
+            <span>&nbsp;otree.mainTree();}</span>
+            <span>&nbsp;otree.mainTree();}</span>
+        </div>
+    </div>
+</div>
+<div class="box1">
+    <div class="wrapText">
+        <div class="spanText">
+            <span>function treeCanvas(){</span>
+            <span>&nbsp;var obj={idCanvas:$("#myTree")[0],radius:20};</span>
+            <span>&nbsp;var otree=new Branch(obj);</span>
+            <span>&nbsp;otree.mainTree();}</span>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="js/jquery1.9.1.min.js"></script>
+<script type="text/javascript">
+    (function($){
+        function MainWrite(ele,obj){
+            this.opts={
+                height:30,                     //设置文本定位高度的大小
+                distance:20,
+                lineNum:0,
+                line:"_",
+                speed:100,
+                endNum:0,
+                arrWidth:[],
+                callback:function(){}
+            };
+            this.li=true;
+            this.setting=$.extend(true,this.opts,obj);
+            this.parent=ele;    //这是这个元素对象
+            this.parent.find(".spanText").append('<div class="textLine">'+this.setting.line+'</div>');
+            this.$textLine=ele.find(".textLine");
+            this.$ospan=ele.find(".spanText span");
+            this.numLength=this.$ospan.size();
+            this.endLength= this.setting.endNum || this.numLength;
+            this.onoff=true;
+            this.gowidth=this.setting.distance;
+            this.goheight=this.setting.height;
+            console.log(this.setting.arrWidth)
+        };
+        MainWrite.prototype.writeMove=function(){
+            if(!this.setting.arrWidth.length){
+                this.setArr();
+            };
+            this.setText();                //生成显示字体的函数
+            this.lineBor();                //光标显示的函数
+            console.log(1,this.setting);
+            this.lineRun(this.gowidth,this.setting.lineNum);  //移动生成字体的函数
+        };
+        MainWrite.prototype.setArr=function(){
+            var p=this;
+            this.$ospan.each(function(i,ele){
+              p.setting.arrWidth[i]= $(ele).width();
+            });
+        };
+        MainWrite.prototype.setText=function(){
+            var p=this;
+            this.$textLine.css({"top":(this.setting.lineNum*this.goheight)+"px"});
+            this.$ospan.each(function(i,ele){
+                if(i< p.setting.lineNum){
+                    $(ele).css({"top":i* p.setting.height+"px","lineHeight":p.setting.height+"px"});
+                }else{
+                    $(ele).css({"top":i* p.setting.height+"px","width":"0px","lineHeight": p.setting.height+"px"});
+                };
+            });
+        };
+        MainWrite.prototype.lineBor=function(){
+            var p=this;
+            this.$textLine.show(100,function(){
+                $(this).hide(100,function(){
+                    if(p.onoff){
+                        p.lineBor();
+                    };
+                });
+            });
+        };
+        MainWrite.prototype.lineRun=function(iW,iA){
+                line(this,iW,iA);
+        };
+        function line(p,iW,iA){
+            p.$textLine.stop(false,true).animate({"left":(iW+= p.gowidth)+"px"},p.setting.speed,function(){
+                p.$ospan.eq(iA).css({"width":iW+"px"});
+//                if(iW>=p.setting.arrWidth[iA]){
+                if(iW>=20){
+                    iA++;
+                    iW=0;
+                };
+                if(iA< p.endLength){
+                    console.log(iW,p.setting.arrWidth,iA,p.endLength);
+                    p.$textLine.css({"top":iA* p.goheight+"px"});
+                   line(p,iW,iA);
+                }else{
+                    p.onoff=false;
+                    p.lineRun=function(){};
+                    p.setting.callback&&p.setting.callback(p.setting.arrWidth);
+                    p.setting={};
+                };
+            });
+        }
+        $.fn.write=function(obj){
+            var s=new MainWrite(this,obj);
+            return s.writeMove();
+        }
+    })(jQuery);
+//        this.opts={
+//        height:30,      //设置文本定位高度的大小
+//        distance:20,
+//        lineNum:0,
+//        line:"_",
+//        speed:100,
+//        endNum:0,
+//        arrWidth:[],
+//        callback:function(){}
+//    };
+
+  function a(){
+      $(".box").write({
+          endNum:2,
+          callback:function(a){
+              console.log("h",a);
+//                b(a);
+          }
+      })
+      console.log($.prototype.write);
+//      b();
+  }
+    function b(a){
+        $(".box").write({
+            arrWidth:a,
+            lineNum:2,
+            speed:200
+        })
+    }
+    a()
+</script>
+</html>
